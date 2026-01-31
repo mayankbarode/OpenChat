@@ -39,7 +39,7 @@ interface SettingsContextType {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { token, isAuthenticated } = useAuth();
+    const { token, isAuthenticated, logout } = useAuth();
     const [settings, setSettings] = useState<AppSettings>(() => {
         const saved = localStorage.getItem('openchatllm_settings');
         if (saved) {
@@ -67,6 +67,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             const response = await fetch('http://localhost:8000/user/settings', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+
+            if (response.status === 401) {
+                console.warn("Session expired or invalid token. Logging out...");
+                logout();
+                return;
+            }
+
             if (response.ok) {
                 const data = await response.json();
                 console.log("Backend settings received:", data);
@@ -108,7 +115,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         if (!isAuthenticated || !token) return;
         try {
             console.log("Saving settings to backend:", updates);
-            await fetch('http://localhost:8000/user/settings', {
+            const response = await fetch('http://localhost:8000/user/settings', {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -116,6 +123,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 },
                 body: JSON.stringify(updates)
             });
+
+            if (response.status === 401) {
+                logout();
+                return;
+            }
+
             console.log("Settings saved to backend successfully");
         } catch (e) {
             console.error("Failed to save backend settings", e);

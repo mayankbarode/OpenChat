@@ -4,6 +4,8 @@ import os
 from typing import Optional, List, Dict, Any
 
 from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, APIRouter, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -14,8 +16,6 @@ from .database.init import init_db
 from .database.models import User, Conversation
 from .api.auth import router as auth_router
 from .api.deps import get_current_user
-
-load_dotenv()
 
 app = FastAPI(title="OpenChatLLM API")
 
