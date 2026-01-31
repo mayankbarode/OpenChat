@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+httpx
+openai
+anthropic
+google-genai
+python-dotenv
+pydantic-settings
+python-multipart
+slowapi
+motor
+beanie
+passlib[bcrypt]
+python-jose[cryptography]
+email-validator
+google-genai
